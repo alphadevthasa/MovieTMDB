@@ -1,5 +1,6 @@
 package com.thasa.moviedb.feature.detail
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -22,11 +25,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -62,7 +68,18 @@ fun MovieDetailScreen(
     val trailer by viewModel.trailer.collectAsStateWithLifecycle()
     val reviews = viewModel.reviews.collectAsLazyPagingItems()
 
-    Box(modifier = Modifier.fillMaxSize().background(MovieDbColors.Background)) {
+    val listState = rememberLazyListState()
+    // Solid top bar once the backdrop has scrolled away, so text never runs under the back arrow.
+    val scrolledPastBackdrop by remember {
+        derivedStateOf { listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 300 }
+    }
+    val topBarColor by animateColorAsState(
+        targetValue = if (scrolledPastBackdrop) MovieDbColors.Background else Color.Transparent,
+        label = "topBarColor",
+    )
+
+    Surface(color = MovieDbColors.Background, contentColor = MovieDbColors.TextPrimary) {
+    Box(modifier = Modifier.fillMaxSize()) {
         when (val current = detail) {
             Resource.Loading -> LoadingView()
             is Resource.Error -> ErrorView(
@@ -70,7 +87,7 @@ fun MovieDetailScreen(
                 onRetry = viewModel::retry,
                 modifier = Modifier.statusBarsPadding().padding(top = TopBarHeight),
             )
-            is Resource.Success -> DetailContent(current.data, trailer, reviews, viewModel::retryTrailer)
+            is Resource.Success -> DetailContent(current.data, trailer, reviews, listState, viewModel::retryTrailer)
         }
         // Drawn over the backdrop; the content scrolls underneath it.
         TopAppBar(
@@ -80,8 +97,9 @@ fun MovieDetailScreen(
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                 }
             },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = topBarColor),
         )
+    }
     }
 }
 
@@ -90,9 +108,10 @@ private fun DetailContent(
     detail: MovieDetail,
     trailer: Resource<Video?>,
     reviews: LazyPagingItems<Review>,
+    listState: LazyListState,
     onRetryTrailer: () -> Unit,
 ) {
-    LazyColumn(contentPadding = WindowInsets.navigationBars.asPaddingValues()) {
+    LazyColumn(state = listState, contentPadding = WindowInsets.navigationBars.asPaddingValues()) {
         item(key = "header") { Header(detail) }
         item(key = "trailer") { TrailerSection(trailer, onRetryTrailer) }
         item(key = "reviews-title") { SectionTitle("Reviews", Modifier.padding(16.dp)) }
