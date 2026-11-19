@@ -2,6 +2,8 @@ package com.thasa.moviedb.navigation
 
 import android.net.Uri
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.Lifecycle
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,9 +22,11 @@ fun MovieDbNavGraph() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = GENRES) {
-        composable(GENRES) {
+        composable(GENRES) { entry ->
             GenreScreen(
-                onGenreClick = { id, name -> navController.navigate("movies/$id/${Uri.encode(name)}") },
+                onGenreClick = { id, name ->
+                    entry.runIfResumed { navController.navigate("movies/$id/${Uri.encode(name)}") }
+                },
             )
         }
         composable(
@@ -34,15 +38,23 @@ fun MovieDbNavGraph() {
         ) { entry ->
             MovieListScreen(
                 genreName = entry.arguments?.getString("genreName").orEmpty(),
-                onMovieClick = { navController.navigate("detail/$it") },
-                onBack = navController::popBackStack,
+                onMovieClick = { entry.runIfResumed { navController.navigate("detail/$it") } },
+                onBack = { entry.runIfResumed { navController.popBackStack() } },
             )
         }
         composable(
             route = DETAIL,
             arguments = listOf(navArgument("movieId") { type = NavType.IntType }),
-        ) {
-            MovieDetailScreen(onBack = navController::popBackStack)
+        ) { entry ->
+            MovieDetailScreen(onBack = { entry.runIfResumed { navController.popBackStack() } })
         }
     }
+}
+
+/**
+ * Ignores taps that arrive while this destination is animating out (or in), so a double tap
+ * can't pop twice (blank screen) or open the same screen twice.
+ */
+private fun NavBackStackEntry.runIfResumed(action: () -> Unit) {
+    if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) action()
 }
