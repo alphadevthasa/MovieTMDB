@@ -10,3 +10,6 @@ fun AppError.toMessage(): String = when (this) {
     is AppError.Server -> "The server had a problem (HTTP $code). Please try again later."
     is AppError.Unknown -> "Something went wrong. Please try again."
 }
+
+/** Paging surfaces plain Throwables; the repository layer already maps them to [AppError]. */
+fun Throwable.toUiError(): AppError = this as? AppError ?: AppError.Unknown(this)
