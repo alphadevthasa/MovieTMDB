@@ -224,7 +224,7 @@ private fun TrailerSection(trailer: Resource<Video?>, onRetry: () -> Unit) {
                 Button(onClick = onRetry) { Text("Retry") }
             }
             is Resource.Success ->
-                trailer.data?.let { TrailerPlayer(it.key) }
+                trailer.data?.let { TrailerCard(it.key) }
                     ?: Text("No trailer available", color = MovieDbColors.TextSecondary)
         }
     }

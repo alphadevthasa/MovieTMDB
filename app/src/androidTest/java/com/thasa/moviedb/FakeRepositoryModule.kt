@@ -40,7 +40,10 @@ class FakeMovieRepository : MovieRepository {
             genres = listOf(Genre(28, "Action"), Genre(18, "Drama")),
         ),
     )
-    override suspend fun getTrailer(id: Int): Resource<Video?> = Resource.Success(null)
+    /** Trailer returned for every movie; tests may set it before opening a detail screen. */
+    var trailer: Video? = null
+
+    override suspend fun getTrailer(id: Int): Resource<Video?> = Resource.Success(trailer)
     override fun reviews(movieId: Int): Flow<PagingData<Review>> {
         val done = LoadState.NotLoading(endOfPaginationReached = true)
         return flowOf(PagingData.from(emptyList(), sourceLoadStates = LoadStates(done, done, done)))
