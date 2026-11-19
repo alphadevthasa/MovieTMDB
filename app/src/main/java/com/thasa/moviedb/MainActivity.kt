@@ -6,6 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.Surface
+import com.thasa.moviedb.core.ui.theme.MovieDbColors
 import com.thasa.moviedb.core.ui.theme.MovieDbTheme
 import com.thasa.moviedb.navigation.MovieDbNavGraph
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,7 +22,10 @@ class MainActivity : ComponentActivity() {
         )
         setContent {
             MovieDbTheme {
-                MovieDbNavGraph()
+                // Solid backdrop behind screen transitions, so the cross-fade never shows the window colour.
+                Surface(color = MovieDbColors.Background) {
+                    MovieDbNavGraph()
+                }
             }
         }
     }

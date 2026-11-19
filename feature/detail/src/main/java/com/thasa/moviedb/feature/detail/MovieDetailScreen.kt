@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -32,14 +33,20 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -69,9 +76,15 @@ fun MovieDetailScreen(
     val reviews = viewModel.reviews.collectAsLazyPagingItems()
 
     val listState = rememberLazyListState()
-    // Solid top bar once the backdrop has scrolled away, so text never runs under the back arrow.
+    // Solid top bar as soon as the title (measured, any length or density) would slide under it.
+    val density = LocalDensity.current
+    val barBottomPx = WindowInsets.statusBars.getTop(density) + with(density) { TopBarHeight.toPx() }
+    var titleTopPx by remember { mutableFloatStateOf(Float.MAX_VALUE) }
     val scrolledPastBackdrop by remember {
-        derivedStateOf { listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 300 }
+        derivedStateOf {
+            listState.firstVisibleItemIndex > 0 ||
+                listState.firstVisibleItemScrollOffset >= (titleTopPx - barBottomPx).coerceAtLeast(0f)
+        }
     }
     val topBarColor by animateColorAsState(
         targetValue = if (scrolledPastBackdrop) MovieDbColors.Background else Color.Transparent,
@@ -79,27 +92,30 @@ fun MovieDetailScreen(
     )
 
     Surface(color = MovieDbColors.Background, contentColor = MovieDbColors.TextPrimary) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        when (val current = detail) {
-            Resource.Loading -> LoadingView()
-            is Resource.Error -> ErrorView(
-                error = current.error,
-                onRetry = viewModel::retry,
-                modifier = Modifier.statusBarsPadding().padding(top = TopBarHeight),
+        Box(modifier = Modifier.fillMaxSize()) {
+            when (val current = detail) {
+                Resource.Loading -> LoadingView()
+                is Resource.Error -> ErrorView(
+                    error = current.error,
+                    onRetry = viewModel::retry,
+                    modifier = Modifier.statusBarsPadding().padding(top = TopBarHeight),
+                )
+                is Resource.Success -> DetailContent(
+                    current.data, trailer, reviews, listState, viewModel::retryTrailer,
+                    onTitlePositioned = { titleTopPx = it },
+                )
+            }
+            // Drawn over the backdrop; the content scrolls underneath it.
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = topBarColor),
             )
-            is Resource.Success -> DetailContent(current.data, trailer, reviews, listState, viewModel::retryTrailer)
         }
-        // Drawn over the backdrop; the content scrolls underneath it.
-        TopAppBar(
-            title = {},
-            navigationIcon = {
-                IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = topBarColor),
-        )
-    }
     }
 }
 
@@ -110,9 +126,10 @@ private fun DetailContent(
     reviews: LazyPagingItems<Review>,
     listState: LazyListState,
     onRetryTrailer: () -> Unit,
+    onTitlePositioned: (topPx: Float) -> Unit,
 ) {
     LazyColumn(state = listState, contentPadding = WindowInsets.navigationBars.asPaddingValues()) {
-        item(key = "header") { Header(detail) }
+        item(key = "header") { Header(detail, onTitlePositioned) }
         item(key = "trailer") { TrailerSection(trailer, onRetryTrailer) }
         item(key = "reviews-title") { SectionTitle("Reviews", Modifier.padding(16.dp)) }
         reviewsSection(reviews)
@@ -120,7 +137,7 @@ private fun DetailContent(
 }
 
 @Composable
-private fun Header(detail: MovieDetail) {
+private fun Header(detail: MovieDetail, onTitlePositioned: (topPx: Float) -> Unit) {
     Column {
         Box {
             PosterImage(
@@ -145,7 +162,12 @@ private fun Header(detail: MovieDetail) {
                 text = detail.title,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Black,
-                modifier = Modifier.align(Alignment.BottomStart).padding(horizontal = 16.dp),
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(horizontal = 16.dp)
+                    .onGloballyPositioned { onTitlePositioned(it.positionInParent().y) },
             )
         }
         Column(
