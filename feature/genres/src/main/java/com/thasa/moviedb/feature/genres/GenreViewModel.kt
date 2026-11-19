@@ -2,6 +2,7 @@ package com.thasa.moviedb.feature.genres
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.thasa.moviedb.core.domain.AppError
 import com.thasa.moviedb.core.domain.Resource
 import com.thasa.moviedb.core.domain.model.Genre
 import com.thasa.moviedb.core.domain.repository.MovieRepository
@@ -9,10 +10,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,10 +51,16 @@ class GenreViewModel @Inject constructor(
     }
 
     private suspend fun loadBackdrops(genres: List<Genre>) {
-        val candidates = genres
-            .map { genre -> viewModelScope.async { genre.id to repository.getGenreBackdrops(genre.id) } }
-            .awaitAll()
-            .toMap()
+        // Child coroutines: cancelled together with loadJob. A slow genre is dropped after the timeout
+        // so it cannot keep every card blank.
+        val candidates = coroutineScope {
+            genres.map { genre ->
+                async {
+                    val result = withTimeoutOrNull(BACKDROP_TIMEOUT_MS) { repository.getGenreBackdrops(genre.id) }
+                    genre.id to (result ?: Resource.Error(AppError.Timeout))
+                }
+            }.awaitAll()
+        }.toMap()
         _backdrops.value = assignUnique(genres, candidates)
     }
 
@@ -69,5 +78,9 @@ class GenreViewModel @Inject constructor(
             assigned[genre.id] = pick
         }
         return assigned
+    }
+
+    private companion object {
+        const val BACKDROP_TIMEOUT_MS = 5_000L
     }
 }

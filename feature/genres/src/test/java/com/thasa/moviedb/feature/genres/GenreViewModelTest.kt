@@ -11,7 +11,10 @@ import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -137,5 +140,16 @@ class GenreViewModelTest {
         assertEquals(emptyMap<Int, String>(), vm.backdrops.value)
         advanceUntilIdle()
         assertEquals(mapOf(28 to "new"), vm.backdrops.value)
+    }
+
+    @Test
+    fun backdrops_oneGenreHangs_othersShownAfterTimeout() = runTest {
+        coEvery { repo.getGenres() } returns Resource.Success(listOf(action, adventure))
+        coEvery { repo.getGenreBackdrops(28) } returns Resource.Success(listOf("a"))
+        coEvery { repo.getGenreBackdrops(12) } coAnswers { awaitCancellation() }
+        val vm = GenreViewModel(repo)
+        advanceTimeBy(5_001)
+        runCurrent()
+        assertEquals(mapOf(28 to "a"), vm.backdrops.value)
     }
 }
