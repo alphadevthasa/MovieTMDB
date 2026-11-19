@@ -6,6 +6,9 @@ import com.thasa.moviedb.core.domain.Resource
 import com.thasa.moviedb.core.domain.model.Genre
 import com.thasa.moviedb.core.domain.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +23,13 @@ class GenreViewModel @Inject constructor(
     private val _state = MutableStateFlow<Resource<List<Genre>>>(Resource.Loading)
     val state: StateFlow<Resource<List<Genre>>> = _state.asStateFlow()
 
+    private val _backdrops = MutableStateFlow<Map<Int, String>>(emptyMap())
+
+    /** Genre id → backdrop URL; a genre without an entry is shown without an image. */
+    val backdrops: StateFlow<Map<Int, String>> = _backdrops.asStateFlow()
+
+    private var loadJob: Job? = null
+
     init {
         load()
     }
@@ -27,9 +37,37 @@ class GenreViewModel @Inject constructor(
     fun retry() = load()
 
     private fun load() {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        _backdrops.value = emptyMap()
+        loadJob = viewModelScope.launch {
             _state.value = Resource.Loading
-            _state.value = repository.getGenres()
+            val result = repository.getGenres()
+            _state.value = result
+            if (result is Resource.Success) loadBackdrops(result.data)
         }
+    }
+
+    private suspend fun loadBackdrops(genres: List<Genre>) {
+        val candidates = genres
+            .map { genre -> viewModelScope.async { genre.id to repository.getGenreBackdrops(genre.id) } }
+            .awaitAll()
+            .toMap()
+        _backdrops.value = assignUnique(genres, candidates)
+    }
+
+    /**
+     * Gives each genre (in list order) its first candidate not used by an earlier genre,
+     * so one very popular movie doesn't repeat across cards. Falls back to the first candidate.
+     */
+    private fun assignUnique(genres: List<Genre>, candidates: Map<Int, Resource<List<String>>>): Map<Int, String> {
+        val used = mutableSetOf<String>()
+        val assigned = linkedMapOf<Int, String>()
+        for (genre in genres) {
+            val urls = (candidates[genre.id] as? Resource.Success)?.data.orEmpty()
+            val pick = urls.firstOrNull { it !in used } ?: urls.firstOrNull() ?: continue
+            used += pick
+            assigned[genre.id] = pick
+        }
+        return assigned
     }
 }
