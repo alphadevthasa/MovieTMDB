@@ -5,7 +5,7 @@ Native Android app that browses movies from the [TMDB API](https://developer.the
 ## Demo
 
 <p align="center">
-  <img src="screenshots/demo.gif" width="300" alt="Demo: genres, endless movie grid, movie detail with trailer and reviews"/>
+  <img src="screenshots/demo.gif" width="260" alt="Demo: genres, endless movie grid, movie detail with trailer and reviews"/>
 </p>
 
 ## Screenshots
