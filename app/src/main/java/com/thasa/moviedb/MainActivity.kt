@@ -3,11 +3,20 @@ package com.thasa.moviedb
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.Text
+import androidx.activity.enableEdgeToEdge
+import com.thasa.moviedb.navigation.MovieDbNavGraph
+import com.thasa.moviedb.ui.theme.MovieDbTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { Text("MovieDB") }
+        enableEdgeToEdge()
+        setContent {
+            MovieDbTheme {
+                MovieDbNavGraph()
+            }
+        }
     }
 }

@@ -17,7 +17,6 @@ android {
 
     defaultConfig {
         minSdk = 24
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -55,4 +54,9 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.paging.testing)
     testImplementation(libs.mockwebserver)
+}
+
+// This module has no instrumented tests.
+androidComponents {
+    beforeVariants(selector().all()) { it.enableAndroidTest = false }
 }
