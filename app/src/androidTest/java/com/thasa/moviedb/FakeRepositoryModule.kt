@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import javax.inject.Singleton
 
+const val LONG_TITLE = "Top Gun: Maverick and a Very Long Subtitle"
+
 /** Fails the first genre request with [AppError.NoNetwork], then succeeds. */
 class FakeMovieRepository : MovieRepository {
     private var genreCalls = 0
@@ -25,7 +27,8 @@ class FakeMovieRepository : MovieRepository {
     override suspend fun getGenres(): Resource<List<Genre>> =
         if (genreCalls++ == 0) Resource.Error(AppError.NoNetwork) else Resource.Success(listOf(Genre(28, "Action")))
 
-    override fun moviesByGenre(genreId: Int): Flow<PagingData<Movie>> = flowOf(PagingData.empty())
+    override fun moviesByGenre(genreId: Int): Flow<PagingData<Movie>> =
+        flowOf(PagingData.from(listOf(Movie(1, LONG_TITLE, null, 8.2, "2022"))))
     override suspend fun getMovieDetail(id: Int): Resource<MovieDetail> = Resource.Error(AppError.NotFound)
     override suspend fun getTrailer(id: Int): Resource<Video?> = Resource.Success(null)
     override fun reviews(movieId: Int): Flow<PagingData<Review>> = flowOf(PagingData.empty())
