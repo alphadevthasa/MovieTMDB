@@ -6,7 +6,7 @@
     <application
         android:name=".MovieDbApp"
         android:allowBackup="false"
-        android:label="MovieDB"
+        android:label="Movie TMDB"
         android:theme="@android:style/Theme.Material.NoActionBar">
         <activity
             android:name=".MainActivity"

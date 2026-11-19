@@ -20,7 +20,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "MovieDB"
+rootProject.name = "MovieTMDB"
 
 include(":app")
 include(":core:domain")

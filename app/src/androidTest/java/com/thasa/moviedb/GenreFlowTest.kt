@@ -34,7 +34,7 @@ class GenreFlowTest {
         compose.onNodeWithText("Retry").performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithText("Action").fetchSemanticsNodes().isNotEmpty() }
 
-        compose.onNodeWithText("MovieDB").assertIsDisplayed()
+        compose.onNodeWithText("Movie TMDB").assertIsDisplayed()
         compose.onNodeWithText("Genres").assertIsDisplayed()
     }
 }

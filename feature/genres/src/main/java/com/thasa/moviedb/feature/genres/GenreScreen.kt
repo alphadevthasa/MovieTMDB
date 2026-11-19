@@ -53,7 +53,7 @@ fun GenreScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "MovieDB",
+                        text = "Movie TMDB",
                         color = MovieDbColors.Red,
                         fontWeight = FontWeight.Black,
                         letterSpacing = 1.sp,

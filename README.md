@@ -1,4 +1,4 @@
-# MovieDB
+# Movie TMDB
 
 Native Android app that browses movies from the [TMDB API](https://developer.themoviedb.org), with a dark, Netflix-inspired look.
 
