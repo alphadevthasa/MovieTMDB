@@ -71,7 +71,7 @@ private fun ReviewCard(review: Review) {
     Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp)) {
         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                PosterImage(review.avatarUrl, contentDescription = null, modifier = Modifier.size(40.dp))
+                PosterImage(review.avatarUrl, title = review.author, modifier = Modifier.size(40.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(review.author, style = MaterialTheme.typography.titleSmall)
                     val meta = listOfNotNull(review.createdAt?.take(10), review.rating?.let { "★ %.1f".format(it) })

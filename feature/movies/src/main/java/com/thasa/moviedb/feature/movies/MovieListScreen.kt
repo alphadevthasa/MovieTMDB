@@ -86,7 +86,7 @@ private fun MovieRow(movie: Movie, onClick: () -> Unit) {
         Row(modifier = Modifier.padding(8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             PosterImage(
                 url = movie.posterUrl,
-                contentDescription = movie.title,
+                title = movie.title,
                 modifier = Modifier.size(width = 80.dp, height = 120.dp),
             )
             Column(modifier = Modifier.weight(1f)) {

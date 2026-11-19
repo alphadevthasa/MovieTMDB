@@ -90,7 +90,7 @@ private fun Header(detail: MovieDetail) {
     Column {
         PosterImage(
             url = detail.backdropUrl ?: detail.posterUrl,
-            contentDescription = detail.title,
+            title = detail.title,
             modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f),
         )
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
