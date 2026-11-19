@@ -25,6 +25,7 @@ android {
         compose = true
     }
     testOptions {
+        targetSdk = 35
         unitTests.isReturnDefaultValues = true
     }
 }
@@ -41,6 +42,7 @@ dependencies {
     implementation(libs.coil.compose)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
