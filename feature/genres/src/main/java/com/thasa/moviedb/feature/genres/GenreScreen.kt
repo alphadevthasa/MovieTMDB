@@ -2,15 +2,16 @@ package com.thasa.moviedb.feature.genres
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import com.thasa.moviedb.core.ui.component.PosterImage
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -45,6 +46,7 @@ fun GenreScreen(
     viewModel: GenreViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val backdrops by viewModel.backdrops.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -70,7 +72,7 @@ fun GenreScreen(
                     if (current.data.isEmpty()) {
                         EmptyView("No genres available")
                     } else {
-                        GenreGrid(genres = current.data, onGenreClick = onGenreClick)
+                        GenreGrid(genres = current.data, backdrops = backdrops, onGenreClick = onGenreClick)
                     }
             }
         }
@@ -78,7 +80,7 @@ fun GenreScreen(
 }
 
 @Composable
-private fun GenreGrid(genres: List<Genre>, onGenreClick: (Int, String) -> Unit) {
+private fun GenreGrid(genres: List<Genre>, backdrops: Map<Int, String>, onGenreClick: (Int, String) -> Unit) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
@@ -94,33 +96,42 @@ private fun GenreGrid(genres: List<Genre>, onGenreClick: (Int, String) -> Unit) 
             )
         }
         items(genres, key = { it.id }) { genre ->
-            GenreCard(genre = genre, onClick = { onGenreClick(genre.id, genre.name) })
+            GenreCard(genre = genre, backdropUrl = backdrops[genre.id], onClick = { onGenreClick(genre.id, genre.name) })
         }
     }
 }
 
 @Composable
-private fun GenreCard(genre: Genre, onClick: () -> Unit) {
-    Row(
+private fun GenreCard(genre: Genre, backdropUrl: String?, onClick: () -> Unit) {
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(72.dp)
+            .aspectRatio(16f / 9f)
             .clip(MaterialTheme.shapes.extraSmall)
             .background(MovieDbColors.Surface)
             .clickable(onClick = onClick),
-        verticalAlignment = Alignment.CenterVertically,
     ) {
+        // No title: genre cards show a plain dark box (no letter) until the image arrives.
+        PosterImage(url = backdropUrl, title = null, modifier = Modifier.matchParentSize())
         Box(
             modifier = Modifier
-                .width(3.dp)
-                .fillMaxHeight()
-                .background(MovieDbColors.Red),
+                .matchParentSize()
+                .background(
+                    Brush.verticalGradient(
+                        0f to Color.Transparent,
+                        0.45f to Color.Transparent,
+                        1f to Color.Black.copy(alpha = 0.85f),
+                    ),
+                ),
         )
         Text(
             text = genre.name,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 14.dp),
+            color = Color.White,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.align(Alignment.BottomStart).padding(10.dp),
         )
     }
 }
