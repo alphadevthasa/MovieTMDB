@@ -1,12 +1,12 @@
-package com.thasa.moviedb.core.network.paging
+package com.thasa.moviedb.core.data.paging
 
 import androidx.paging.PagingSource.LoadParams
 import androidx.paging.PagingSource.LoadResult
 import com.thasa.moviedb.core.domain.AppError
-import com.thasa.moviedb.core.network.enqueueJson
-import com.thasa.moviedb.core.network.moviePageJson
-import com.thasa.moviedb.core.network.reviewPageJson
-import com.thasa.moviedb.core.network.tmdbApi
+import com.thasa.moviedb.core.data.enqueueJson
+import com.thasa.moviedb.core.data.moviePageJson
+import com.thasa.moviedb.core.data.reviewPageJson
+import com.thasa.moviedb.core.data.tmdbApi
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After

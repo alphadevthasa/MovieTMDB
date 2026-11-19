@@ -1,11 +1,11 @@
-package com.thasa.moviedb.core.network.paging
+package com.thasa.moviedb.core.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.thasa.moviedb.core.domain.model.Movie
 import com.thasa.moviedb.core.network.api.TmdbApi
-import com.thasa.moviedb.core.network.mapper.toDomain
-import com.thasa.moviedb.core.network.toAppError
+import com.thasa.moviedb.core.data.mapper.toDomain
+import com.thasa.moviedb.core.data.toAppError
 import kotlin.coroutines.cancellation.CancellationException
 
 class MoviePagingSource(

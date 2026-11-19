@@ -25,6 +25,7 @@ rootProject.name = "MovieDB"
 include(":app")
 include(":core:domain")
 include(":core:network")
+include(":core:data")
 include(":core:ui")
 include(":feature:genres")
 include(":feature:movies")

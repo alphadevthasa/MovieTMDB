@@ -11,7 +11,7 @@ import com.thasa.moviedb.core.domain.model.MovieDetail
 import com.thasa.moviedb.core.domain.model.Review
 import com.thasa.moviedb.core.domain.model.Video
 import com.thasa.moviedb.core.domain.repository.MovieRepository
-import com.thasa.moviedb.core.network.di.RepositoryModule
+import com.thasa.moviedb.core.data.di.RepositoryModule
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent

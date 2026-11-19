@@ -33,27 +33,16 @@ android {
         }
         buildConfigField("String", "TMDB_ACCESS_TOKEN", "\"${localProps.getProperty("TMDB_ACCESS_TOKEN", "")}\"")
     }
-    testOptions {
-        unitTests.isReturnDefaultValues = true
-    }
 }
 
 dependencies {
-    implementation(project(":core:domain"))
-    implementation(libs.retrofit)
+    api(libs.retrofit)
     implementation(libs.retrofit.converter.moshi)
     implementation(libs.okhttp)
     implementation(libs.moshi)
-    implementation(libs.moshi.kotlin)
     ksp(libs.moshi.codegen)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-    testImplementation(libs.junit)
-    testImplementation(libs.mockk)
-    testImplementation(libs.turbine)
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.androidx.paging.testing)
-    testImplementation(libs.mockwebserver)
 }
 
 // This module has no instrumented tests.

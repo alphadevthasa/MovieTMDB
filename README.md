@@ -35,15 +35,18 @@ Kotlin 2.0.21 · Jetpack Compose + Material 3 · MVVM + Repository (Clean Archit
 ```
 app/                 MainActivity, Hilt application, navigation graph
 core/domain/         models, MovieRepository interface, AppError, Resource
-core/network/        TmdbApi, DTOs, mappers, PagingSources, MovieRepositoryImpl, Hilt modules
+core/data/           MovieRepositoryImpl, PagingSources, DTO → domain mappers, error mapping (data layer)
+core/network/        TmdbApi (Retrofit), DTOs, OkHttp/Moshi setup (remote data source)
 core/ui/             theme + reusable composables (loading, error + retry, empty, paging footer, poster, rating)
 feature/genres/      GenreScreen + GenreViewModel
 feature/movies/      MovieListScreen + MovieListViewModel (Paging 3)
 feature/detail/      MovieDetailScreen + MovieDetailViewModel, trailer player, reviews list
 ```
 
-Flow: `Screen (Compose) → ViewModel (StateFlow / Flow<PagingData>) → MovieRepository → TmdbApi`.
-Errors are mapped once, in `core/network`, to a sealed `AppError` and shown as readable messages in the UI.
+Flow: `Screen (Compose) → ViewModel (StateFlow / Flow<PagingData>) → MovieRepository (core/domain) → MovieRepositoryImpl (core/data) → TmdbApi (core/network)`.
+Errors are mapped once, in `core/data`, to a sealed `AppError` and shown as readable messages in the UI.
+
+The data layer is a separate module so a local source (e.g. Room as the single source of truth with a Paging `RemoteMediator`) can be added in `core/data` later without changing the feature modules.
 
 ## Setup
 

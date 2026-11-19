@@ -36,6 +36,7 @@ android {
 dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:network"))
+    implementation(project(":core:data"))
     implementation(project(":core:ui"))
     implementation(project(":feature:genres"))
     implementation(project(":feature:movies"))

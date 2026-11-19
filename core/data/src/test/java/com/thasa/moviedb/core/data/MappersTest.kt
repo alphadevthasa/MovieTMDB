@@ -1,4 +1,4 @@
-package com.thasa.moviedb.core.network
+package com.thasa.moviedb.core.data
 
 import com.thasa.moviedb.core.network.dto.AuthorDetailsDto
 import com.thasa.moviedb.core.network.dto.GenreDto
@@ -7,9 +7,9 @@ import com.thasa.moviedb.core.network.dto.MovieDto
 import com.thasa.moviedb.core.network.dto.MovieListResponse
 import com.thasa.moviedb.core.network.dto.ReviewDto
 import com.thasa.moviedb.core.network.dto.VideoDto
-import com.thasa.moviedb.core.network.mapper.backdropUrls
-import com.thasa.moviedb.core.network.mapper.firstYouTubeTrailer
-import com.thasa.moviedb.core.network.mapper.toDomain
+import com.thasa.moviedb.core.data.mapper.backdropUrls
+import com.thasa.moviedb.core.data.mapper.firstYouTubeTrailer
+import com.thasa.moviedb.core.data.mapper.toDomain
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test

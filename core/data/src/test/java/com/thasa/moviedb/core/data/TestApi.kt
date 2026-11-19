@@ -1,4 +1,4 @@
-package com.thasa.moviedb.core.network
+package com.thasa.moviedb.core.data
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory

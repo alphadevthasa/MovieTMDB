@@ -1,4 +1,4 @@
-package com.thasa.moviedb.core.network.repo
+package com.thasa.moviedb.core.data.repository
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -11,12 +11,12 @@ import com.thasa.moviedb.core.domain.model.Review
 import com.thasa.moviedb.core.domain.model.Video
 import com.thasa.moviedb.core.domain.repository.MovieRepository
 import com.thasa.moviedb.core.network.api.TmdbApi
-import com.thasa.moviedb.core.network.mapper.backdropUrls
-import com.thasa.moviedb.core.network.mapper.firstYouTubeTrailer
-import com.thasa.moviedb.core.network.mapper.toDomain
-import com.thasa.moviedb.core.network.paging.MoviePagingSource
-import com.thasa.moviedb.core.network.paging.ReviewPagingSource
-import com.thasa.moviedb.core.network.toAppError
+import com.thasa.moviedb.core.data.mapper.backdropUrls
+import com.thasa.moviedb.core.data.mapper.firstYouTubeTrailer
+import com.thasa.moviedb.core.data.mapper.toDomain
+import com.thasa.moviedb.core.data.paging.MoviePagingSource
+import com.thasa.moviedb.core.data.paging.ReviewPagingSource
+import com.thasa.moviedb.core.data.toAppError
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException

@@ -1,11 +1,8 @@
 package com.thasa.moviedb.core.network.di
 
 import com.squareup.moshi.Moshi
-import com.thasa.moviedb.core.domain.repository.MovieRepository
 import com.thasa.moviedb.core.network.BuildConfig
 import com.thasa.moviedb.core.network.api.TmdbApi
-import com.thasa.moviedb.core.network.repo.MovieRepositoryImpl
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -49,12 +46,4 @@ object NetworkModule {
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()
         .create(TmdbApi::class.java)
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class RepositoryModule {
-    @Binds
-    @Singleton
-    abstract fun bindMovieRepository(impl: MovieRepositoryImpl): MovieRepository
 }

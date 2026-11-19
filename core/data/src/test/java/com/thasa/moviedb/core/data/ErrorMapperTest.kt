@@ -1,4 +1,4 @@
-package com.thasa.moviedb.core.network
+package com.thasa.moviedb.core.data
 
 import com.thasa.moviedb.core.domain.AppError
 import okhttp3.ResponseBody.Companion.toResponseBody

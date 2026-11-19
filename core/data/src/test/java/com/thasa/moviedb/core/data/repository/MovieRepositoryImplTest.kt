@@ -1,11 +1,11 @@
-package com.thasa.moviedb.core.network.repo
+package com.thasa.moviedb.core.data.repository
 
 import androidx.paging.testing.asSnapshot
 import com.thasa.moviedb.core.domain.AppError
 import com.thasa.moviedb.core.domain.Resource
-import com.thasa.moviedb.core.network.enqueueJson
-import com.thasa.moviedb.core.network.moviePageJson
-import com.thasa.moviedb.core.network.tmdbApi
+import com.thasa.moviedb.core.data.enqueueJson
+import com.thasa.moviedb.core.data.moviePageJson
+import com.thasa.moviedb.core.data.tmdbApi
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer

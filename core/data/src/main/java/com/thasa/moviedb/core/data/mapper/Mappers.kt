@@ -1,4 +1,4 @@
-package com.thasa.moviedb.core.network.mapper
+package com.thasa.moviedb.core.data.mapper
 
 import com.thasa.moviedb.core.domain.model.Genre
 import com.thasa.moviedb.core.domain.model.Movie
