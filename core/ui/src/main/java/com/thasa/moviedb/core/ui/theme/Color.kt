@@ -9,5 +9,6 @@ object MovieDbColors {
     val Red = Color(0xFFE50914)
     val TextPrimary = Color.White
     val TextSecondary = Color(0xFFB3B3B3)
+    val TextLight = Color(0xFFE5E5E5)
     val RatingGreen = Color(0xFF46D369)
 }

@@ -1,5 +1,7 @@
 package com.thasa.moviedb
 
+import androidx.paging.LoadState
+import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import com.thasa.moviedb.core.domain.AppError
 import com.thasa.moviedb.core.domain.Resource
@@ -29,9 +31,18 @@ class FakeMovieRepository : MovieRepository {
 
     override fun moviesByGenre(genreId: Int): Flow<PagingData<Movie>> =
         flowOf(PagingData.from(listOf(Movie(1, LONG_TITLE, null, 8.2, "2022"))))
-    override suspend fun getMovieDetail(id: Int): Resource<MovieDetail> = Resource.Error(AppError.NotFound)
+    override suspend fun getMovieDetail(id: Int): Resource<MovieDetail> = Resource.Success(
+        MovieDetail(
+            id = id, title = LONG_TITLE, tagline = "Feel the need.", overview = "Overview text",
+            posterUrl = null, backdropUrl = null, rating = 8.2, releaseDate = "2022-05-24", runtimeMinutes = 131,
+            genres = listOf(Genre(28, "Action"), Genre(18, "Drama")),
+        ),
+    )
     override suspend fun getTrailer(id: Int): Resource<Video?> = Resource.Success(null)
-    override fun reviews(movieId: Int): Flow<PagingData<Review>> = flowOf(PagingData.empty())
+    override fun reviews(movieId: Int): Flow<PagingData<Review>> {
+        val done = LoadState.NotLoading(endOfPaginationReached = true)
+        return flowOf(PagingData.from(emptyList(), sourceLoadStates = LoadStates(done, done, done)))
+    }
 }
 
 @Module

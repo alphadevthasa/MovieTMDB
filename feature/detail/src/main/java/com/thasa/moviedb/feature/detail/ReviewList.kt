@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -27,7 +29,9 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
 import com.thasa.moviedb.core.domain.model.Review
 import com.thasa.moviedb.core.ui.component.PosterImage
+import com.thasa.moviedb.core.ui.component.RatingText
 import com.thasa.moviedb.core.ui.component.pagingFooter
+import com.thasa.moviedb.core.ui.theme.MovieDbColors
 import com.thasa.moviedb.core.ui.toMessage
 import com.thasa.moviedb.core.ui.toUiError
 
@@ -54,7 +58,7 @@ fun LazyListScope.reviewsSection(reviews: LazyPagingItems<Review>) {
             }
         }
         reviews.itemCount == 0 -> item(key = "reviews-empty") {
-            Text("No reviews yet", modifier = Modifier.padding(16.dp))
+            Text("No reviews yet", color = MovieDbColors.TextSecondary, modifier = Modifier.padding(16.dp))
         }
         else -> {
             items(count = reviews.itemCount, key = reviews.itemKey { it.id }) { index ->
@@ -68,15 +72,21 @@ fun LazyListScope.reviewsSection(reviews: LazyPagingItems<Review>) {
 @Composable
 private fun ReviewCard(review: Review) {
     var expanded by remember(review.id) { mutableStateOf(false) }
-    Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp)) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp),
+        shape = MaterialTheme.shapes.extraSmall,
+        colors = CardDefaults.cardColors(containerColor = MovieDbColors.Surface),
+    ) {
         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 PosterImage(review.avatarUrl, title = review.author, modifier = Modifier.size(40.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(review.author, style = MaterialTheme.typography.titleSmall)
-                    val meta = listOfNotNull(review.createdAt?.take(10), review.rating?.let { "★ %.1f".format(it) })
-                    if (meta.isNotEmpty()) {
-                        Text(meta.joinToString("  •  "), style = MaterialTheme.typography.bodySmall)
+                    Text(review.author, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        review.createdAt?.let {
+                            Text(it.take(10), style = MaterialTheme.typography.bodySmall, color = MovieDbColors.TextSecondary)
+                        }
+                        review.rating?.let { RatingText(it) }
                     }
                 }
             }
@@ -85,6 +95,7 @@ private fun ReviewCard(review: Review) {
                 maxLines = if (expanded) Int.MAX_VALUE else COLLAPSED_LINES,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.bodyMedium,
+                color = MovieDbColors.TextLight,
             )
             if (review.content.length > LONG_REVIEW_CHARS) {
                 TextButton(onClick = { expanded = !expanded }) { Text(if (expanded) "Show less" else "Read more") }
