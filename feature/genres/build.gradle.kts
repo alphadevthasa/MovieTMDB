@@ -11,7 +11,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.thasa.moviedb.feature.genres"
+    namespace = "com.thasa.movietmdb.feature.genres"
     compileSdk = 35
 
     defaultConfig {

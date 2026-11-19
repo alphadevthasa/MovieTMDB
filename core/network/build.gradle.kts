@@ -12,7 +12,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.thasa.moviedb.core.network"
+    namespace = "com.thasa.movietmdb.core.network"
     compileSdk = 35
 
     defaultConfig {

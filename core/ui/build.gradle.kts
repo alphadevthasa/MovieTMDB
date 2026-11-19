@@ -9,7 +9,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.thasa.moviedb.core.ui"
+    namespace = "com.thasa.movietmdb.core.ui"
     compileSdk = 35
 
     defaultConfig {

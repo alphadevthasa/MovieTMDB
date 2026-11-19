@@ -11,16 +11,16 @@ kotlin {
 }
 
 android {
-    namespace = "com.thasa.moviedb"
+    namespace = "com.thasa.movietmdb"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.thasa.moviedb"
+        applicationId = "com.thasa.movietmdb"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-        testInstrumentationRunner = "com.thasa.moviedb.HiltTestRunner"
+        testInstrumentationRunner = "com.thasa.movietmdb.HiltTestRunner"
     }
 
     compileOptions {
