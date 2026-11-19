@@ -27,4 +27,14 @@ class GenreFlowTest {
         compose.waitUntil(5_000) { compose.onAllNodesWithText("Action").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("Action").assertIsDisplayed()
     }
+
+    @Test
+    fun genreScreen_showsWordmarkAndGenresHeading() {
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("Retry").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("Retry").performClick()
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("Action").fetchSemanticsNodes().isNotEmpty() }
+
+        compose.onNodeWithText("MovieDB").assertIsDisplayed()
+        compose.onNodeWithText("Genres").assertIsDisplayed()
+    }
 }
