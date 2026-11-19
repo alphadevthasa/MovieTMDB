@@ -68,6 +68,16 @@ class PagingSourceTest {
     }
 
     @Test
+    fun moviePagingSource_movieRepeatedOnNextPage_isDroppedFromThatPage() = runTest {
+        server.enqueueJson(moviePageJson(1, 2, 1, 2))
+        server.enqueueJson(moviePageJson(2, 2, 2, 3))
+        val source = MoviePagingSource(server.tmdbApi(), 28)
+        source.load(refresh<Int>())
+        val second = source.load(LoadParams.Append(2, 20, false)) as LoadResult.Page
+        assertEquals(listOf(3), second.data.map { it.id })
+    }
+
+    @Test
     fun reviewPagingSource_firstPage_nextKeyIs2() = runTest {
         server.enqueueJson(reviewPageJson(1, 2, "r1"))
         val result = ReviewPagingSource(server.tmdbApi(), 5).load(refresh<Int>()) as LoadResult.Page

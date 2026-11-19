@@ -13,12 +13,15 @@ class MoviePagingSource(
     private val genreId: Int,
 ) : PagingSource<Int, Movie>() {
 
+    /** TMDB discover can repeat a movie on a later page; the UI list needs unique ids. */
+    private val seenIds = mutableSetOf<Int>()
+
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
         val page = params.key ?: FIRST_PAGE
         return try {
             val response = api.discover(genreId, page)
             LoadResult.Page(
-                data = response.results.map { it.toDomain() },
+                data = response.results.map { it.toDomain() }.filter { seenIds.add(it.id) },
                 prevKey = null,
                 nextKey = if (page < response.totalPages) page + 1 else null,
             )
