@@ -1,6 +1,20 @@
 # MovieDB
 
-Native Android app that browses movies from the [TMDB API](https://developer.themoviedb.org).
+Native Android app that browses movies from the [TMDB API](https://developer.themoviedb.org), with a dark, Netflix-inspired look.
+
+## Demo
+
+<p align="center">
+  <img src="screenshots/demo.gif" width="300" alt="Demo: genres, endless movie grid, movie detail with trailer and reviews"/>
+</p>
+
+## Screenshots
+
+| Genres | Movies by genre | Movie detail |
+|:---:|:---:|:---:|
+| <img src="screenshots/genres.png" width="240" alt="Genres"/> | <img src="screenshots/movies.png" width="240" alt="Movies by genre"/> | <img src="screenshots/detail.png" width="240" alt="Movie detail with trailer"/> |
+| **User reviews** | **Error state (offline)** | |
+| <img src="screenshots/reviews.png" width="240" alt="User reviews"/> | <img src="screenshots/error.png" width="240" alt="No internet error with retry"/> | |
 
 ## Features
 
@@ -10,6 +24,7 @@ Native Android app that browses movies from the [TMDB API](https://developer.the
 4. **User reviews** – paged list of reviews with "Read more" for long texts, with endless scrolling.
 5. **Trailer** – the YouTube trailer plays in-app; if the player cannot load, an "Open on YouTube" button is shown.
 6. **Positive and negative cases** – loading, empty and error states (no network, timeout, HTTP 401/404/5xx) with a Retry action; a failed next page keeps the loaded items and shows an inline retry row.
+7. **Netflix-inspired UI** – always-dark theme with red accents, 3-column poster grid, full-width backdrop with gradient on the detail screen.
 
 ## Tech stack
 
@@ -18,10 +33,10 @@ Kotlin 2.0.21 · Jetpack Compose + Material 3 · MVVM + Repository (Clean Archit
 ## Architecture
 
 ```
-app/                 MainActivity, Hilt application, navigation graph, theme
+app/                 MainActivity, Hilt application, navigation graph
 core/domain/         models, MovieRepository interface, AppError, Resource
 core/network/        TmdbApi, DTOs, mappers, PagingSources, MovieRepositoryImpl, Hilt modules
-core/ui/             shared composables (loading, error + retry, empty, paging footer, poster)
+core/ui/             theme + reusable composables (loading, error + retry, empty, paging footer, poster, rating)
 feature/genres/      GenreScreen + GenreViewModel
 feature/movies/      MovieListScreen + MovieListViewModel (Paging 3)
 feature/detail/      MovieDetailScreen + MovieDetailViewModel, trailer player, reviews list
@@ -53,6 +68,7 @@ Requirements: Android Studio with Android SDK 35, min SDK 24.
 
 Unit tests cover the positive and negative paths: success, empty list, no network, timeout, HTTP 401/404/5xx,
 null fields, last page, a failing second page, and a movie without a YouTube trailer.
-UI tests cover the error → retry → content flow.
+UI tests cover the error → retry → content flow, the poster grid, the detail screen, double-tap on Back,
+and the shared components (theme colours, poster placeholder, rating format in any locale, grid paging footer).
 
 Movie data is provided by [TMDB](https://www.themoviedb.org). This product uses the TMDB API but is not endorsed or certified by TMDB.
