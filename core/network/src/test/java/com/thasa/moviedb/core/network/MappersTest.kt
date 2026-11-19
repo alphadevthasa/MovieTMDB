@@ -4,8 +4,10 @@ import com.thasa.moviedb.core.network.dto.AuthorDetailsDto
 import com.thasa.moviedb.core.network.dto.GenreDto
 import com.thasa.moviedb.core.network.dto.MovieDetailDto
 import com.thasa.moviedb.core.network.dto.MovieDto
+import com.thasa.moviedb.core.network.dto.MovieListResponse
 import com.thasa.moviedb.core.network.dto.ReviewDto
 import com.thasa.moviedb.core.network.dto.VideoDto
+import com.thasa.moviedb.core.network.mapper.backdropUrls
 import com.thasa.moviedb.core.network.mapper.firstYouTubeTrailer
 import com.thasa.moviedb.core.network.mapper.toDomain
 import org.junit.Assert.assertEquals
@@ -15,7 +17,7 @@ import org.junit.Test
 class MappersTest {
 
     private fun movieDto(poster: String? = "/p.jpg", date: String? = "2023-05-01") =
-        MovieDto(id = 1, title = "T", posterPath = poster, voteAverage = 7.5, releaseDate = date)
+        MovieDto(id = 1, title = "T", posterPath = poster, backdropPath = null, voteAverage = 7.5, releaseDate = date)
 
     @Test
     fun movieDto_withNullPoster_mapsToNullPosterUrl() {
@@ -98,5 +100,18 @@ class MappersTest {
             VideoDto("v2", "Teaser", "YouTube", "Teaser"),
         )
         assertNull(videos.firstYouTubeTrailer())
+    }
+
+    @Test
+    fun movieList_backdropUrls_skipsNullAndBlank_keepsOrder() {
+        fun dto(id: Int, backdrop: String?) = MovieDto(id, "T$id", null, backdrop, 7.0, null)
+        val response = MovieListResponse(
+            page = 1, totalPages = 1,
+            results = listOf(dto(1, "/a.jpg"), dto(2, null), dto(3, ""), dto(4, "/b.jpg")),
+        )
+        assertEquals(
+            listOf("https://image.tmdb.org/t/p/w780/a.jpg", "https://image.tmdb.org/t/p/w780/b.jpg"),
+            response.backdropUrls(),
+        )
     }
 }

@@ -8,6 +8,7 @@ import com.thasa.moviedb.core.domain.model.Video
 import com.thasa.moviedb.core.network.dto.GenreDto
 import com.thasa.moviedb.core.network.dto.MovieDetailDto
 import com.thasa.moviedb.core.network.dto.MovieDto
+import com.thasa.moviedb.core.network.dto.MovieListResponse
 import com.thasa.moviedb.core.network.dto.ReviewDto
 import com.thasa.moviedb.core.network.dto.VideoDto
 
@@ -29,6 +30,9 @@ fun MovieDto.toDomain() = Movie(
     rating = voteAverage ?: 0.0,
     releaseYear = releaseDate.toYear(),
 )
+
+/** Backdrop URLs of the movies on this page that have one, in API (popularity) order. */
+fun MovieListResponse.backdropUrls(): List<String> = results.mapNotNull { it.backdropPath.toImageUrl(BACKDROP_BASE) }
 
 fun MovieDetailDto.toDomain() = MovieDetail(
     id = id,

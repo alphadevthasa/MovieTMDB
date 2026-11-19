@@ -92,4 +92,23 @@ class MovieRepositoryImplTest {
         val items = repo.moviesByGenre(28).asSnapshot()
         assertEquals(listOf(1, 2, 3), items.map { it.id })
     }
+
+    @Test
+    fun getGenreBackdrops_success_returnsUrlsInOrder() = runTest {
+        server.enqueueJson(
+            """{"page":1,"total_pages":5,"results":[
+            {"id":1,"title":"A","poster_path":null,"backdrop_path":"/a.jpg","vote_average":7.0,"release_date":null},
+            {"id":2,"title":"B","poster_path":null,"backdrop_path":null,"vote_average":7.0,"release_date":null},
+            {"id":3,"title":"C","poster_path":null,"backdrop_path":"/c.jpg","vote_average":7.0,"release_date":null}]}""",
+        )
+        val urls = (repo.getGenreBackdrops(28) as Resource.Success).data
+        assertEquals(listOf("https://image.tmdb.org/t/p/w780/a.jpg", "https://image.tmdb.org/t/p/w780/c.jpg"), urls)
+        assertEquals("/discover/movie?with_genres=28&page=1", server.takeRequest().path)
+    }
+
+    @Test
+    fun getGenreBackdrops_http500_returnsError() = runTest {
+        server.enqueueJson("{}", 500)
+        assertEquals(Resource.Error(AppError.Server(500)), repo.getGenreBackdrops(28))
+    }
 }

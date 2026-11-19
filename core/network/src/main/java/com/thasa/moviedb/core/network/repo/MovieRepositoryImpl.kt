@@ -11,6 +11,7 @@ import com.thasa.moviedb.core.domain.model.Review
 import com.thasa.moviedb.core.domain.model.Video
 import com.thasa.moviedb.core.domain.repository.MovieRepository
 import com.thasa.moviedb.core.network.api.TmdbApi
+import com.thasa.moviedb.core.network.mapper.backdropUrls
 import com.thasa.moviedb.core.network.mapper.firstYouTubeTrailer
 import com.thasa.moviedb.core.network.mapper.toDomain
 import com.thasa.moviedb.core.network.paging.MoviePagingSource
@@ -29,6 +30,9 @@ class MovieRepositoryImpl @Inject constructor(
 
     override fun moviesByGenre(genreId: Int): Flow<PagingData<Movie>> =
         Pager(PAGING_CONFIG) { MoviePagingSource(api, genreId) }.flow
+
+    override suspend fun getGenreBackdrops(genreId: Int): Resource<List<String>> =
+        safeCall { api.discover(genreId, page = 1).backdropUrls() }
 
     override suspend fun getMovieDetail(id: Int): Resource<MovieDetail> =
         safeCall { api.movieDetail(id).toDomain() }

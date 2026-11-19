@@ -31,6 +31,8 @@ class FakeMovieRepository : MovieRepository {
 
     override fun moviesByGenre(genreId: Int): Flow<PagingData<Movie>> =
         flowOf(PagingData.from(listOf(Movie(1, LONG_TITLE, null, 8.2, "2022"))))
+    override suspend fun getGenreBackdrops(genreId: Int): Resource<List<String>> = Resource.Success(emptyList())
+
     override suspend fun getMovieDetail(id: Int): Resource<MovieDetail> = Resource.Success(
         MovieDetail(
             id = id, title = LONG_TITLE, tagline = "Feel the need.", overview = "Overview text",
